@@ -8,5 +8,9 @@ __pycache__/
 # Raw UCI CSV (57 MB): re-download with scripts/download_data.py; its .source.json stays tracked
 data/raw/*.csv
 
-# Generated results (figures, CSVs of each run): reproduce with the notebooks and scripts
-outputs/
+# Results: track the data figures and the reference runs cited in README; new runs stay local
+outputs/experiments/*
+!outputs/experiments/20261027-224952-full/
+outputs/smo_check/*
+!outputs/smo_check/20261027-113713/
+outputs/preprocessing/

@@ -92,6 +92,8 @@ học lại cách thu thập dữ liệu.
 **2. Rò rỉ nhãn.** `URLSimilarityIndex` một mình đạt **AUC 0,996**, vì nó đo độ giống với chính danh sách URL
 hợp lệ dùng để tạo nhãn. Ngoài ra 28 cột nội dung HTML đòi hỏi tải trang, nằm ngoài phạm vi bài toán.
 
+![Univariate AUC](outputs/eda/03_univariate_auc.png)
+
 **3. Nhóm nền tảng.** Hàng nghìn hostname lừa đảo dùng chung một tên miền đăng ký (`web.app`, `firebaseapp.com`,
 `repl.co`). Nếu chia train/test ngẫu nhiên, cùng một nền tảng sẽ nằm ở cả hai phía và kết quả bị thổi phồng.
 
@@ -173,8 +175,11 @@ Hỗ trợ kernel linear, polynomial, RBF. Tham số `record_trace=True` in từ
 
 Toàn bộ thực nghiệm và biểu đồ nằm trong [notebook 02](notebooks/02_experiments.ipynb), chế độ FULL.
 Các chỉ số chất lượng có tính tất định: chạy lại cho kết quả trùng hoàn toàn. Thời gian là thời gian thực
-đo trên máy của nhóm (CPU 20 luồng), dao động khoảng 10–20% giữa các lần chạy. Mỗi lần chạy lưu CSV và hình vào
-`outputs/experiments/<thời điểm>/` trên máy (thư mục này không đưa lên repo).
+đo trên máy của nhóm (CPU 20 luồng), dao động khoảng 10–20% giữa các lần chạy. Toàn bộ CSV và hình của bản FULL
+dùng trong README nằm ở [`outputs/experiments/20261027-224952-full/`](outputs/experiments/20261027-224952-full/);
+mỗi lần chạy mới lưu vào một thư mục `outputs/experiments/<thời điểm>/` riêng trên máy.
+
+![Kernel comparison](outputs/experiments/20261027-224952-full/02_kernel_comparison.png)
 
 ### So sánh mô hình (test: 45.087 hostname, tên miền chưa từng thấy)
 
@@ -299,6 +304,10 @@ Hai notebook được sinh từ `scripts/build_*_notebook.py`; chạy các scrip
 │   ├── raw/                  Thông tin nguồn + SHA-256 (CSV gốc tải bằng script)
 │   └── processed/            hosts.csv + cleaning_log.json
 ├── models/                   Mô hình tốt nhất (npz + json)
+├── outputs/
+│   ├── eda/                  6 hình phần dữ liệu (notebook 01)
+│   ├── experiments/…-full/   Bản FULL: 7 hình + CSV kết quả, lưới tham số, thời gian, lỗi
+│   └── smo_check/            Đối chiếu SMO tự cài với LIBSVM trên dữ liệu thật
 ├── experiments/              Thực nghiệm chạy bằng dòng lệnh
 ├── scripts/                  Tải dữ liệu, làm sạch, huấn luyện, chạy/sinh notebook
 ├── demo/                     Web demo (server.py + index.html)

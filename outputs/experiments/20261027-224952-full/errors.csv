@@ -1,0 +1,21 @@
+host,phishing,decision,error
+eriwa.uni.me,1,-1.3928852773928093,missed phishing
+cia.ezua.com,1,-1.3472360614011833,missed phishing
+chlvowallet.me,1,-1.32840654778611,missed phishing
+symbiosis-consulting.com,1,-1.3075537285543053,missed phishing
+debankconnect.com,1,-1.3014416692171964,missed phishing
+aaaaa.xurhu.com,1,-1.2648633225641346,missed phishing
+staking-mummyfinance.com,1,-1.258907937769132,missed phishing
+christian-lehrmann.com,1,-1.2425752174906122,missed phishing
+dsuda2.com,1,-1.2334841199917759,missed phishing
+go2apx.com,1,-1.2334841199917759,missed phishing
+pageantupdate.info,0,1.5044372593488138,false alarm
+sport24.gr,0,1.4738490391612014,false alarm
+gsm-modem.de,0,1.4641272889061172,false alarm
+bulls-club.de,0,1.4582681497776748,false alarm
+la-allstars.org,0,1.451969559515971,false alarm
+hara-mrm.com,0,1.4410966096095272,false alarm
+fly-yoga.fr,0,1.4236142314983757,false alarm
+mpmc-china.com,0,1.420949962228974,false alarm
+rhr-na.org,0,1.3935491220093996,false alarm
+porn-xxx.org,0,1.391402148015949,false alarm

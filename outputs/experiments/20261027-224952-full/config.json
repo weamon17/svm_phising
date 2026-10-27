@@ -1,0 +1,133 @@
+{
+  "quick": false,
+  "seed": 42,
+  "n_train_all": 173949,
+  "n_kernel": 8000,
+  "n_test": 45087,
+  "cv_folds": 5,
+  "sizes": [
+    500,
+    1000,
+    2000,
+    4000,
+    8000,
+    16000,
+    32000
+  ],
+  "smo_max_n": 8000,
+  "grids": {
+    "linear": {
+      "svc__C": [
+        0.01,
+        0.1,
+        1,
+        10
+      ]
+    },
+    "poly2": {
+      "svc__C": [
+        0.01,
+        0.1,
+        1,
+        10
+      ]
+    },
+    "poly3": {
+      "svc__C": [
+        0.01,
+        0.1,
+        1,
+        10
+      ]
+    },
+    "rbf": {
+      "svc__C": [
+        0.1,
+        0.3,
+        1,
+        3,
+        10,
+        30,
+        100
+      ],
+      "svc__gamma": [
+        0.003,
+        0.01,
+        0.03,
+        0.1,
+        0.3,
+        1,
+        3
+      ]
+    }
+  },
+  "linear_full_C": [
+    0.001,
+    0.01,
+    0.1,
+    1,
+    10
+  ],
+  "best_params": {
+    "host": {
+      "linear": {
+        "kernel": "linear",
+        "C": 10
+      },
+      "poly2": {
+        "kernel": "poly",
+        "degree": 2,
+        "gamma": "scale",
+        "coef0": 1.0,
+        "C": 10
+      },
+      "poly3": {
+        "kernel": "poly",
+        "degree": 3,
+        "gamma": "scale",
+        "coef0": 1.0,
+        "C": 1
+      },
+      "rbf": {
+        "kernel": "rbf",
+        "C": 1,
+        "gamma": 0.3
+      }
+    },
+    "registered": {
+      "linear": {
+        "kernel": "linear",
+        "C": 10
+      },
+      "poly2": {
+        "kernel": "poly",
+        "degree": 2,
+        "gamma": "scale",
+        "coef0": 1.0,
+        "C": 1
+      },
+      "poly3": {
+        "kernel": "poly",
+        "degree": 3,
+        "gamma": "scale",
+        "coef0": 1.0,
+        "C": 10
+      },
+      "rbf": {
+        "kernel": "rbf",
+        "C": 100,
+        "gamma": 0.3
+      }
+    }
+  },
+  "confusion_matrix_rbf_host": [
+    [
+      25974,
+      924
+    ],
+    [
+      6724,
+      11465
+    ]
+  ]
+}

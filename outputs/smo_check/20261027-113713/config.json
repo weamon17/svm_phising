@@ -1,0 +1,46 @@
+{
+  "n_train": 2000,
+  "n_test": 10000,
+  "tol": 0.001,
+  "seed": 42,
+  "train_phishing_share": 0.3795,
+  "test_phishing_share": 0.4034,
+  "features": [
+    "host_len",
+    "n_labels",
+    "n_hyphens",
+    "n_digits",
+    "digit_ratio",
+    "entropy",
+    "max_label_len",
+    "domain_label_len",
+    "vowel_ratio",
+    "max_consonant_run",
+    "is_ip",
+    "has_punycode",
+    "n_sensitive_words",
+    "brand_not_owner",
+    "has_subdomain",
+    "subdomain_labels",
+    "subdomain_len"
+  ],
+  "configs": {
+    "linear (C=1)": {
+      "kernel": "linear",
+      "C": 1.0
+    },
+    "rbf (C=1, gamma=scale)": {
+      "kernel": "rbf",
+      "C": 1.0,
+      "gamma": "scale"
+    },
+    "poly d=3 (C=1, gamma=scale, coef0=1)": {
+      "kernel": "poly",
+      "C": 1.0,
+      "gamma": "scale",
+      "degree": 3,
+      "coef0": 1.0
+    }
+  },
+  "split": "GroupShuffleSplit by registered_domain, test_size=0.2, then stratified subsample"
+}

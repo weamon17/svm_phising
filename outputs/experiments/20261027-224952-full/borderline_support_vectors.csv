@@ -1,0 +1,13 @@
+host,phishing,decision,label
+kopertais02.or.id,1,0.001471147587848276,phishing
+parks.wa.gov,0,-0.0033160711161760448,legitimate
+pc-franeker.nl,0,-0.004347995808612781,legitimate
+typsygypsies.com,0,0.009103082920764671,legitimate
+use-records.com,1,-0.02160624698187541,phishing
+ueoihwik7ru0.win,1,0.023477946661087934,phishing
+scotiabanknuitblanche.ca,0,-0.026350994600059074,legitimate
+warszawa1939.pl,0,-0.02680814803401399,legitimate
+shop.negoti8.com.au,1,0.027505382120473487,phishing
+t1bet.net,1,0.02942902405768477,phishing
+arthur.niria.biz,1,-0.029578613184720326,phishing
+adlliiran-ir.cf,1,-0.031335479655480336,phishing
