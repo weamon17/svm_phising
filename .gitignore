@@ -1,0 +1,12 @@
+# Environment and caches
+.venv/
+.jupyter_runtime/
+__pycache__/
+.pytest_cache/
+.vscode/
+
+# Raw UCI CSV (57 MB): re-download with scripts/download_data.py; its .source.json stays tracked
+data/raw/*.csv
+
+# Generated results (figures, CSVs of each run): reproduce with the notebooks and scripts
+outputs/

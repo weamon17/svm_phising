@@ -1,0 +1,34 @@
+{
+  "created_at_utc": "2026-10-27T04:18:26.028456+00:00",
+  "raw_csv_sha256": "a236549cd369cd80bd478ff8e1779cbf44c58d5c3f79f7a51a1adbed7d06d1c6",
+  "steps": [
+    {
+      "step": "raw rows",
+      "rows": 235795
+    },
+    {
+      "step": "drop duplicated URLs",
+      "rows": 235370,
+      "removed": 425
+    },
+    {
+      "step": "drop URLs without hostname",
+      "rows": 235370,
+      "removed": 0
+    },
+    {
+      "step": "collapse to unique hostnames",
+      "rows": 219094,
+      "removed": 16276
+    },
+    {
+      "step": "drop hostnames labelled both ways",
+      "rows": 219036,
+      "removed": 58
+    }
+  ],
+  "phishing_hosts": 84244,
+  "legitimate_hosts": 134792,
+  "registered_domains": 175452,
+  "processed_sha256": "ce3912ba73365286e75009ff23393c7a316685943d3af1dc7abd9efacd9e91ac"
+}

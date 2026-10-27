@@ -1,0 +1,11 @@
+{
+  "source_url": "https://archive.ics.uci.edu/static/public/967/phiusiil+phishing+url+dataset.zip",
+  "landing_url": "https://archive.ics.uci.edu/dataset/967/phiusiil+phishing+url+dataset",
+  "citation": "Prasad, A. & Chandra, S. (2024). PhiUSIIL: A diverse security profile empowered phishing URL detection framework based on similarity index and incremental learning. Computers & Security, 136, 103545.",
+  "license": "CC BY 4.0",
+  "downloaded_at_utc": "2026-10-27T04:14:53.994022+00:00",
+  "archive_sha256": "0a639fd03aea6308c5b1c10c92aa23c2ce1505447a9137271865cd0badc9a59a",
+  "csv_sha256": "a236549cd369cd80bd478ff8e1779cbf44c58d5c3f79f7a51a1adbed7d06d1c6",
+  "csv_bytes": 56854345,
+  "paper_doi": "10.1016/j.cose.2023.103545"
+}

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SVM Phishing Detector</title>
+<style>
+:root { --bg:#f6f7f9; --card:#fff; --text:#1a202c; --muted:#5a6475; --line:#e2e6ec;
+  --accent:#2b6cb0; --phish:#c05621; --phish-bg:#fdf0e8; --legit:#2f855a; --legit-bg:#e9f6ef;
+  --warn:#b7791f; --warn-bg:#fdf6e3; --mono:ui-monospace,SFMono-Regular,Consolas,monospace; }
+@media (prefers-color-scheme: dark) { :root { --bg:#14171c; --card:#1d2128; --text:#e6e9ef; --muted:#9aa4b2;
+  --line:#2e343e; --accent:#63a4e8; --phish:#f0884f; --phish-bg:#3a2418; --legit:#5cc08a; --legit-bg:#16302a;
+  --warn:#e6b34a; --warn-bg:#352b14; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; }
+main { max-width:980px; margin:0 auto; padding:28px 16px 48px; }
+h1 { font-size:24px; font-weight:600; margin:0 0 4px; } h2 { font-size:15px; font-weight:600; margin:0 0 12px; }
+.sub { color:var(--muted); margin:0 0 20px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin-bottom:16px; }
+form { display:flex; gap:10px; flex-wrap:wrap; }
+input[type=text] { flex:1; min-width:240px; font:15px var(--mono); padding:11px 12px; border:1px solid var(--line);
+  border-radius:8px; background:var(--bg); color:var(--text); }
+input[type=text]:focus { outline:2px solid var(--accent); outline-offset:1px; }
+button { font:inherit; font-weight:600; padding:11px 20px; border:0; border-radius:8px; background:var(--accent); color:#fff; cursor:pointer; }
+button:disabled { opacity:.6; cursor:wait; }
+.chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.chip { font:12.5px var(--mono); background:transparent; color:var(--muted); border:1px solid var(--line); padding:5px 10px; font-weight:400; }
+.chip:hover { color:var(--text); border-color:var(--muted); }
+.error { color:var(--phish); margin-top:10px; min-height:1.2em; font-size:14px; }
+.verdict { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.badge { display:inline-block; font-weight:700; font-size:20px; padding:8px 16px; border-radius:10px; }
+.badge.phishing { background:var(--phish-bg); color:var(--phish); } .badge.legitimate { background:var(--legit-bg); color:var(--legit); }
+.badge.uncertain { background:var(--warn-bg); color:var(--warn); }
+.fx { font:600 28px var(--mono); } .fx small { font:13px system-ui; color:var(--muted); display:block; text-align:right; }
+.gauge { position:relative; height:44px; margin:18px 0 6px; }
+.track { position:absolute; top:14px; left:0; right:0; height:10px; border-radius:5px;
+  background:linear-gradient(90deg,var(--legit) 0 33.33%,var(--warn) 33.33% 66.67%,var(--phish) 66.67% 100%); opacity:.35; }
+.tick { position:absolute; top:28px; font:11px var(--mono); color:var(--muted); transform:translateX(-50%); }
+.marker { position:absolute; top:6px; width:4px; height:26px; background:var(--text); border-radius:2px; transform:translateX(-50%); transition:left .35s; }
+.zone-note { color:var(--muted); font-size:13.5px; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; } @media (max-width:760px){ .grid { grid-template-columns:1fr; } }
+table { width:100%; border-collapse:collapse; font-size:13.5px; }
+th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); } th { color:var(--muted); font-weight:500; }
+td.num, th.num { text-align:right; font-family:var(--mono); white-space:nowrap; } td.mono { font-family:var(--mono); word-break:break-all; }
+tr.hot td { color:var(--phish); font-weight:600; }
+.kv { display:grid; grid-template-columns:150px 1fr; gap:4px 12px; font-size:14px; } .kv div:nth-child(odd) { color:var(--muted); }
+.kv div:nth-child(even) { font-family:var(--mono); word-break:break-all; }
+.pull { display:flex; gap:8px; align-items:center; font-size:13.5px; margin-top:10px; flex-wrap:wrap; }
+.pill { padding:2px 8px; border-radius:6px; font-family:var(--mono); }
+.pill.p { background:var(--phish-bg); color:var(--phish); } .pill.l { background:var(--legit-bg); color:var(--legit); }
+.pill.b { background:var(--bg); color:var(--muted); border:1px solid var(--line); }
+.dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
+footer { color:var(--muted); font-size:12.5px; margin-top:8px; }
+#result[hidden], .ood[hidden] { display:none; }
+.ood { margin-top:14px; padding:10px 14px; border:1px solid var(--warn); border-radius:8px; background:var(--warn-bg); font-size:13.5px; }
+.ood b { color:var(--warn); }
+</style>
+</head>
+<body>
+<main>
+  <h1>SVM Phishing Detector</h1>
+  <p class="sub">Classifies a hostname as phishing or legitimate using an RBF-kernel SVM trained with our from-scratch SMO solver. Only the hostname string is used: the page is never opened.</p>
+
+  <section class="card">
+    <form id="form">
+      <input id="url" type="text" placeholder="Paste a URL or hostname, e.g. https://example.com/login" autocomplete="off" spellcheck="false" aria-label="URL or hostname">
+      <button id="go" type="submit">Analyze</button>
+    </form>
+    <div class="chips" id="chips"></div>
+    <div class="error" id="error" role="alert"></div>
+  </section>
+
+  <div id="result" hidden>
+    <section class="card">
+      <div class="verdict">
+        <div><span class="badge" id="badge"></span></div>
+        <div class="fx"><span id="fx"></span><small>decision value f(x)</small></div>
+      </div>
+      <div class="gauge" aria-hidden="true">
+        <div class="track"></div>
+        <div class="tick" style="left:0%">−3</div><div class="tick" style="left:33.33%">−1</div>
+        <div class="tick" style="left:50%">0</div><div class="tick" style="left:66.67%">+1</div><div class="tick" style="left:100%">+3</div>
+        <div class="marker" id="marker"></div>
+      </div>
+      <div class="zone-note" id="zoneNote"></div>
+      <div class="pull" id="pull"></div>
+      <div class="ood" id="ood" hidden></div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>1 · Parsed hostname</h2>
+        <div class="kv" id="parsed"></div>
+      </section>
+      <section class="card">
+        <h2>2 · Most influential support vectors</h2>
+        <table><thead><tr><th>Training hostname</th><th class="num">K(xᵢ,x)</th><th class="num">αᵢyᵢK</th></tr></thead><tbody id="svs"></tbody></table>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>3 · Feature vector (17 features, z = standardized with training mean/std)</h2>
+      <table><thead><tr><th>Feature</th><th class="num">Raw value</th><th class="num">z-score</th></tr></thead><tbody id="feats"></tbody></table>
+    </section>
+  </div>
+
+  <footer id="footer">Loading model…</footer>
+</main>
+
+<script>
+const EXAMPLES = ["https://www.wikipedia.org", "github.com/login", "abcbank-xacminh.secure-login.xyz",
+  "http://paypal.com@verify-account.web.app/", "metamask-wallet-restore.firebaseapp.com", "outl00k.net"];
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt = (v, d = 3) => (v >= 0 ? "+" : "−") + (v !== 0 && Math.abs(v) < 10 ** -d ? Math.abs(v).toExponential(1) : Math.abs(v).toFixed(d));
+const ZONE = {
+  phishing: ["Phishing", "f(x) ≥ +1: outside the margin on the phishing side → confident, block."],
+  legitimate: ["Legitimate", "f(x) ≤ −1: outside the margin on the legitimate side → confident, allow."],
+  uncertain: ["Uncertain", "−1 < f(x) < +1: inside the margin → the model is not confident, warn the user."],
+};
+
+$("chips").innerHTML = EXAMPLES.map(e => `<button type="button" class="chip">${esc(e)}</button>`).join("");
+$("chips").addEventListener("click", ev => { if (ev.target.classList.contains("chip")) { $("url").value = ev.target.textContent; analyze(); } });
+$("url").addEventListener("input", () => { $("error").textContent = ""; });
+$("form").addEventListener("submit", ev => { ev.preventDefault(); analyze(); });
+
+async function analyze() {
+  const url = $("url").value.trim();
+  if (!url) { $("error").textContent = "Enter a URL or hostname first."; $("url").focus(); return; }
+  $("go").disabled = true; $("error").textContent = "";
+  try {
+    const res = await fetch("/api/predict", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url }) });
+    const data = await res.json();
+    if (!res.ok) { $("error").textContent = data.error || "Request failed."; $("result").hidden = true; return; }
+    render(data);
+  } catch (e) {
+    $("error").textContent = "Cannot reach the demo server. Is demo/server.py running?";
+  } finally { $("go").disabled = false; }
+}
+
+function render(r) {
+  const [title, note] = ZONE[r.zone];
+  $("badge").className = "badge " + r.zone;
+  $("badge").textContent = r.zone === "uncertain" ? `${title} · leaning ${r.label}` : title;
+  $("fx").textContent = fmt(r.decision);
+  $("marker").style.left = (Math.max(-3, Math.min(3, r.decision)) + 3) / 6 * 100 + "%";
+  $("zoneNote").textContent = note + "  Default threshold: f(x) > 0 → phishing.";
+  $("pull").innerHTML = `f(x) = <span class="pill p">${fmt(r.pull_phishing)}</span> pull from phishing SVs
+    + <span class="pill l">${fmt(r.pull_legitimate)}</span> pull from legitimate SVs
+    + <span class="pill b">${fmt(r.intercept)}</span> bias b`;
+  $("ood").hidden = !r.out_of_distribution;
+  if (r.out_of_distribution) {
+    const causes = r.extreme_features.map(f => `${esc(f.name)} (z = ${fmt(f.z, 1)})`).join(", ") || "several unusual feature values";
+    $("ood").innerHTML = `<b>Out of distribution.</b> This hostname is far from every support vector in RBF space
+      (max K = ${r.max_similarity.toExponential(1)}), so the support vectors barely contribute and f(x) ≈ b.
+      The verdict reflects the bias, not evidence. Cause: extreme standardized values: ${causes}.` +
+      (BIAS ? ` On the held-out test set ${(BIAS.share * 100).toFixed(1)}% of hostnames fall in this region and
+      ${(BIAS.phishing_share * 100).toFixed(1)}% of them are phishing: the default "unfamiliar → phishing" is usually right
+      on this dataset, but it is a property of the data collection, not learned evidence.` : "");
+  }
+  const kv = [["Input", r.input], ["Hostname", r.host], ["Registered domain", r.registered_domain],
+              ["Subdomain", r.subdomain || "—"], ["Public suffix", r.suffix || "— (IP address)"]];
+  $("parsed").innerHTML = kv.map(([k, v]) => `<div>${k}</div><div>${esc(v)}</div>`).join("");
+  $("svs").innerHTML = r.nearest_support_vectors.map(s => `<tr><td class="mono"><span class="dot"
+      style="background:var(--${s.label === "phishing" ? "phish" : "legit"})"></span>${esc(s.host)}</td>
+      <td class="num">${s.similarity >= 1e-3 ? s.similarity.toFixed(3) : s.similarity.toExponential(1)}</td><td class="num">${fmt(s.contribution)}</td></tr>`).join("");
+  $("feats").innerHTML = r.features.map(f => `<tr class="${Math.abs(f.z) >= 2 ? "hot" : ""}"><td class="mono">${esc(f.name)}</td>
+      <td class="num">${Number.isInteger(f.value) ? f.value : f.value.toFixed(3)}</td><td class="num">${fmt(f.z, 2)}</td></tr>`).join("");
+  $("result").hidden = false;
+}
+
+let BIAS = null;
+fetch("/api/model").then(r => r.json()).then(m => {
+  const t = m.test_metrics;
+  BIAS = m.bias_dominated_test;
+  $("footer").textContent = `Model: ${m.kernel.toUpperCase()} SVM (C = ${m.C}, γ = ${m.gamma}) trained by ${m.solver} on
+    ${m.n_train.toLocaleString()} hostnames · ${m.n_support.toLocaleString()} support vectors · held-out test
+    (${m.n_test.toLocaleString()} hostnames): F1 ${t.f1.toFixed(3)}, precision ${t.precision.toFixed(3)},
+    recall ${t.recall.toFixed(3)}, ROC-AUC ${t.roc_auc.toFixed(3)}. Educational demo: hostname features only.`;
+}).catch(() => { $("footer").textContent = "Model info unavailable."; });
+</script>
+</body>
+</html>
