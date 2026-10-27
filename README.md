@@ -172,18 +172,19 @@ Hỗ trợ kernel linear, polynomial, RBF. Tham số `record_trace=True` in từ
 ## 5. Kết quả
 
 Toàn bộ thực nghiệm và biểu đồ nằm trong [notebook 02](notebooks/02_experiments.ipynb), chế độ FULL.
-Số liệu dưới đây có tính tất định: chạy lại cho kết quả trùng hoàn toàn. Mỗi lần chạy lưu CSV và hình vào
+Các chỉ số chất lượng có tính tất định: chạy lại cho kết quả trùng hoàn toàn. Thời gian là thời gian thực
+đo trên máy của nhóm (CPU 20 luồng), dao động khoảng 10–20% giữa các lần chạy. Mỗi lần chạy lưu CSV và hình vào
 `outputs/experiments/<thời điểm>/` trên máy (thư mục này không đưa lên repo).
 
 ### So sánh mô hình (test: 45.087 hostname, tên miền chưa từng thấy)
 
 | Mô hình | Tham số | Precision | Recall | **F1** | ROC-AUC | Support vector | Thời gian fit |
 |---|---|---|---|---|---|---|---|
-| **SVC RBF** | C = 1, γ = 0,3 | 0,925 | 0,630 | **0,750** | 0,835 | 3.612 | 2,3 s |
-| **SMO tự cài (RBF)** | C = 1, γ = 0,3 | 0,925 | 0,630 | **0,750** | 0,834 | 3.567 | 19,6 s |
-| SVC linear | C = 10 | 0,909 | 0,624 | 0,740 | 0,836 | 3.142 | 9,2 s |
-| SVC poly bậc 2 | C = 10 | 0,949 | 0,599 | 0,734 | 0,822 | 3.375 | 7,6 s |
-| SVC poly bậc 3 | C = 1 | 0,946 | 0,597 | 0,732 | 0,834 | 2.893 | 12,5 s |
+| **SVC RBF** | C = 1, γ = 0,3 | 0,925 | 0,630 | **0,750** | 0,835 | 3.612 | 3,0 s |
+| **SMO tự cài (RBF)** | C = 1, γ = 0,3 | 0,925 | 0,630 | **0,750** | 0,834 | 3.567 | 24,4 s |
+| SVC linear | C = 10 | 0,909 | 0,624 | 0,740 | 0,836 | 3.142 | 9,9 s |
+| SVC poly bậc 2 | C = 10 | 0,949 | 0,599 | 0,734 | 0,822 | 3.375 | 8,6 s |
+| SVC poly bậc 3 | C = 1 | 0,946 | 0,597 | 0,732 | 0,834 | 2.893 | 10,6 s |
 | Logistic Regression | — | 0,919 | 0,629 | 0,747 | 0,843 | — | 0,1 s |
 | LinearSVC (toàn bộ 173.949) | C = 1 | 0,921 | 0,626 | 0,745 | 0,842 | — | 1,0 s |
 | Đoán lớp đa số | — | 0 | 0 | 0 | 0,500 | — | — |
@@ -203,9 +204,9 @@ bị **underfitting**; vùng C lớn, γ lớn giảm dần do **overfitting**. 
 
 | n | SVC RBF (LIBSVM) | SMO tự cài | LinearSVC | F1 của SVC RBF | Số support vector |
 |---|---|---|---|---|---|
-| 1.000 | 0,04 s | 0,33 s | 0,005 s | 0,745 | 578 |
-| 8.000 | 2,5 s | 17,2 s | 0,02 s | 0,750 | 3.612 |
-| 32.000 | 47,9 s | — | 0,12 s | 0,749 | 13.169 |
+| 1.000 | 0,04 s | 0,22 s | 0,003 s | 0,745 | 578 |
+| 8.000 | 2,0 s | 18,3 s | 0,04 s | 0,750 | 3.612 |
+| 32.000 | 41,8 s | — | 0,11 s | 0,749 | 13.169 |
 | 173.949 | — | — | 1,0 s | 0,745 (LinearSVC) | — |
 
 Kernel SVM tăng khoảng **O(n²)**, số support vector tăng gần tuyến tính theo n. F1 bão hoà từ khoảng
@@ -271,7 +272,7 @@ Dữ liệu đã làm sạch và mô hình có sẵn trong repo, nên notebook 0
 | Việc | Lệnh | Thời gian |
 |---|---|---|
 | Notebook dữ liệu (cần dữ liệu gốc) | mở `notebooks/01_data_audit.ipynb` → Run All | ~20 giây |
-| Notebook thực nghiệm | mở `notebooks/02_experiments.ipynb` → Run All (`QUICK = True` chạy thử ~4 phút, `False` ~45 phút) | |
+| Notebook thực nghiệm | mở `notebooks/02_experiments.ipynb` → Run All. Notebook lưu sẵn kết quả bản FULL (`QUICK = False`, ~45 phút); đổi thành `QUICK = True` để chạy thử ~4 phút | ~4 / ~45 phút |
 | Đối chiếu SMO với LIBSVM | `python -m experiments.check_smo_vs_sklearn` | ~30 giây |
 | So sánh tiền xử lý | `python -m experiments.compare_preprocessing` | ~8 phút |
 | Huấn luyện lại mô hình | `python -m scripts.train_demo_model` | ~25 giây |
