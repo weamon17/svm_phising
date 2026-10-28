@@ -1,0 +1,3 @@
+-r requirements.txt
+# Only needed to build the submission package (exports notebooks to HTML)
+nbconvert==7.17.2

@@ -14,3 +14,6 @@ outputs/experiments/*
 outputs/smo_check/*
 !outputs/smo_check/20261027-113713/
 outputs/preprocessing/
+
+# Submission packages built by scripts/make_submission.py
+dist/
